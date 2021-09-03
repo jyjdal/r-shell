@@ -18,7 +18,6 @@ fn main() {
             .expect("Failed to read line.");
 
         // // 判空，如果为空自动进入下一轮循环
-        // FIXME 这里需要改逻辑
         if buf.len() == 0 {
             std::process::exit(0);
         }
@@ -27,10 +26,10 @@ fn main() {
         let res = parse_command(&mut buf);
 
         if let Some(t) = command_map.get(res.command) {
-            println!("Command name: {}", t.name());
             t.run(res.args.clone());
         } else {
-            if let Err(_) = std::process::Command::new(res.command).status() {
+            let args = res.clone().to_vec();
+            if let Err(_) = std::process::Command::new(res.command).args(args).status() {
                 println!("Unknown command!");
             }
         }
