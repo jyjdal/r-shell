@@ -10,3 +10,4 @@ crossterm = "0.20.0"
 walkdir = "2"
 
 r-parser = { path = "../r-parser" }
+r-context = { path = "../r-context" }

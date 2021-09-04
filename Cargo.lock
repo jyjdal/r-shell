@@ -154,6 +154,7 @@ name = "r-command"
 version = "0.1.0"
 dependencies = [
  "crossterm",
+ "r-context",
  "r-parser",
  "walkdir",
 ]
@@ -162,6 +163,7 @@ dependencies = [
 name = "r-context"
 version = "0.1.0"
 dependencies = [
+ "once_cell",
  "walkdir",
 ]
 

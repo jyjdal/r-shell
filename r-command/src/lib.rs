@@ -2,7 +2,7 @@ pub mod commands;
 
 use commands::all_commands;
 
-use r_parser::data::CommandArg;
+use r_parser::command_args::CommandArg;
 
 pub trait BaseCommand {
     fn name(&self) -> &str;

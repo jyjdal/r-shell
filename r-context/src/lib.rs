@@ -1,11 +1,17 @@
 use std::env;
 use std::path::PathBuf;
 
-pub struct Context {}
+use once_cell::sync::OnceCell;
+
+pub struct Context {
+    pub current_dir: std::path::PathBuf,
+}
 
 impl<'a> Context {
-    pub fn new() -> Self {
-        Context {}
+    pub fn new() -> OnceCell<Self> {
+        OnceCell::from(Context {
+            current_dir: std::env::current_dir().unwrap(),
+        })
     }
 
     pub fn current_dir() -> PathBuf {

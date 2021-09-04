@@ -1,10 +1,10 @@
-use std::env;
 use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
 
 use crate::BaseCommand;
 
-use r_parser::data::CommandArg;
+use r_context::Context;
+use r_parser::command_args::CommandArg;
 
 pub struct Ls {}
 
@@ -13,17 +13,34 @@ impl BaseCommand for Ls {
         "ls"
     }
 
-    fn run(&self, _: Vec<CommandArg>) {
-        let current_dir = &env::current_dir().unwrap();
+    fn run(&self, args: Vec<CommandArg>) {
+        if let Some(c) = Context::new().get() {
+            let path = Path::new(&c.current_dir);
 
-        let path = Path::new(current_dir);
+            let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
+            print!("  .\t..\t");
 
-        let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
-        print!("  .\t..\t");
-        for entry in walker.filter_entry(|e| !is_hidden(e)) {
-            print!("{}\t", entry.unwrap().path().display());
+            let mut all: bool = false;
+
+            for arg in args {
+                if let Some(t) = arg.tag {
+                    if t == "a" {
+                        all = true;
+                    }
+                }
+            }
+
+            if all {
+                for entry in walker {
+                    print!("{}\t", entry.unwrap().path().display());
+                }
+            } else {
+                for entry in walker.filter_entry(|e| !is_hidden(e)) {
+                    print!("{}\t", entry.unwrap().path().display());
+                }
+            }
+            println!("");
         }
-        println!("");
     }
 }
 

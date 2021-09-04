@@ -3,7 +3,7 @@ use crossterm::Command as CCommand;
 
 use crate::BaseCommand;
 
-use r_parser::data::CommandArg;
+use r_parser::command_args::CommandArg;
 
 pub struct Clear {}
 
