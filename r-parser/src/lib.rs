@@ -20,7 +20,7 @@ pub fn parse_command(input: &mut String) -> CommandAndArgs {
         } else {
             res.args.push(CommandArg {
                 tag: None,
-                value: ArgValue::String(arg.to_string()),
+                value: ArgValue::String(arg.trim().to_string()),
             })
         }
     }

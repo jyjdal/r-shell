@@ -3,7 +3,7 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::BaseCommand;
 
-use r_context::Context;
+use r_context::CONTEXT;
 use r_parser::command_args::CommandArg;
 
 pub struct Ls {}
@@ -14,11 +14,10 @@ impl BaseCommand for Ls {
     }
 
     fn run(&self, args: Vec<CommandArg>) {
-        if let Some(c) = Context::new().get() {
-            let path = Path::new(&c.current_dir);
+        unsafe {
+            let path = Path::new(&CONTEXT.current_dir);
 
             let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
-            print!("  .\t..\t");
 
             let mut all: bool = false;
 
@@ -30,6 +29,7 @@ impl BaseCommand for Ls {
                 }
             }
 
+            print!("  .\t..\t");
             if all {
                 for entry in walker {
                     print!("{}\t", entry.unwrap().path().display());

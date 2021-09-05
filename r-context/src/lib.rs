@@ -1,24 +1,15 @@
 use std::env;
 use std::path::PathBuf;
 
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 
 pub struct Context {
-    pub current_dir: std::path::PathBuf,
+    pub current_dir: PathBuf,
 }
 
-impl<'a> Context {
-    pub fn new() -> OnceCell<Self> {
-        OnceCell::from(Context {
-            current_dir: std::env::current_dir().unwrap(),
-        })
-    }
-
-    pub fn current_dir() -> PathBuf {
-        env::current_dir().unwrap()
-    }
-
-    pub fn os() -> &'a str {
-        env::consts::OS
-    }
-}
+pub static mut CONTEXT: Lazy<Context> = Lazy::new(|| {
+    let c = Context {
+        current_dir: env::current_dir().unwrap()
+    };
+    c
+});
