@@ -24,11 +24,10 @@ impl BaseCommand for Cd {
                 return;
             }
 
-            // BUG 这里在切换盘符的时候会出问题，表现为目录显示不正确
             unsafe {
                 let mut new_path = CONTEXT.current_dir.clone();
                 new_path.push(path);
-                if new_path.exists() {
+                if new_path.exists() && new_path.is_dir() {
                     CONTEXT.current_dir = new_path;
                 } else {
                     println!("Path does not exist!")

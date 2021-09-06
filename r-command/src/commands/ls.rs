@@ -32,14 +32,34 @@ impl BaseCommand for Ls {
             print!("  .\t..\t");
             if all {
                 for entry in walker {
-                    print!("{}\t", entry.unwrap().path().display());
+                    display_path(entry.unwrap());
                 }
             } else {
                 for entry in walker.filter_entry(|e| !is_hidden(e)) {
-                    print!("{}\t", entry.unwrap().path().display());
+                    display_path(entry.unwrap());
                 }
             }
             println!("");
+        }
+    }
+}
+
+fn display_path(entry: DirEntry) {
+    let path = entry.into_path();
+    if let Some(n) = path.file_name() {
+        if let Some(n) = n.to_str() {
+            print!("{}", n);
+            if path.is_dir() {
+                #[cfg(windows)]
+                {
+                    print!("\\");
+                }
+                #[cfg(not(windows))]
+                {
+                    print!("/");
+                }
+            }
+            print!("\t");
         }
     }
 }
