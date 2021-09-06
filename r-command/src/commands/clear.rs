@@ -12,7 +12,7 @@ impl BaseCommand for Clear {
         "clear"
     }
 
-    fn run(&self, _: Vec<CommandArg>) {
+    fn run(&self, _: &Vec<CommandArg>) {
         crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
             .execute_winapi()
             .unwrap();

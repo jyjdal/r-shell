@@ -7,7 +7,7 @@ use r_parser::command_args::CommandArg;
 pub trait BaseCommand {
     fn name(&self) -> &str;
 
-    fn run(&self, input: Vec<CommandArg>);
+    fn run(&self, input: &Vec<CommandArg>);
 }
 
 use std::collections::HashMap;

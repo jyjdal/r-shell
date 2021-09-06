@@ -26,7 +26,7 @@ fn main() {
         let res = parse_command(&mut buf);
 
         if let Some(t) = command_map.get(res.command) {
-            t.run(res.args.clone());
+            t.run(&res.args);
         } else {
             let args = res.clone().to_vec();
             if let Err(_) = std::process::Command::new(res.command).args(args).status() {

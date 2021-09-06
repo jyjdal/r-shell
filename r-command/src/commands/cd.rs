@@ -9,7 +9,7 @@ impl BaseCommand for Cd {
         "cd"
     }
 
-    fn run(&self, args: Vec<CommandArg>) {
+    fn run(&self, args: &Vec<CommandArg>) {
         if args.len() == 0 {
             return;
         }

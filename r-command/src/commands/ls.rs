@@ -13,7 +13,7 @@ impl BaseCommand for Ls {
         "ls"
     }
 
-    fn run(&self, args: Vec<CommandArg>) {
+    fn run(&self, args: &Vec<CommandArg>) {
         unsafe {
             let path = Path::new(&CONTEXT.current_dir);
 

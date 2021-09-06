@@ -11,7 +11,7 @@ impl BaseCommand for Exit {
         "exit"
     }
 
-    fn run(&self, _: Vec<CommandArg>) {
+    fn run(&self, _: &Vec<CommandArg>) {
         exit(0);
     }
 }
