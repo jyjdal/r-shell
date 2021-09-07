@@ -1,8 +1,10 @@
+mod cat;
 mod cd;
 mod clear;
 mod exit;
 mod ls;
 
+pub use cat::Cat;
 pub use cd::Cd;
 pub use clear::Clear;
 pub use exit::Exit;
@@ -16,5 +18,6 @@ pub fn all_commands() -> Vec<Box<dyn BaseCommand>> {
         Box::new(Ls {}),
         Box::new(Exit {}),
         Box::new(Cd {}),
+        Box::new(Cat {}),
     ]
 }
