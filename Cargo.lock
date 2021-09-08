@@ -153,7 +153,6 @@ dependencies = [
 name = "r-command"
 version = "0.1.0"
 dependencies = [
- "crossterm",
  "r-context",
  "r-parser",
  "walkdir",
@@ -168,8 +167,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "r-error"
+name = "r-core"
 version = "0.1.0"
+dependencies = [
+ "crossterm",
+ "r-command",
+ "r-context",
+ "r-parser",
+]
 
 [[package]]
 name = "r-parser"
@@ -211,10 +216,7 @@ version = "0.1.0"
 dependencies = [
  "crossterm",
  "once_cell",
- "r-command",
- "r-context",
- "r-error",
- "r-parser",
+ "r-core",
  "walkdir",
 ]
 

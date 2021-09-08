@@ -3,11 +3,13 @@ pub mod commands;
 use commands::all_commands;
 
 use r_parser::command_args::CommandArg;
+use r_context::context::Context;
+use r_context::action::CommandAction;
 
 pub trait BaseCommand {
     fn name(&self) -> &str;
 
-    fn run(&self, input: &Vec<CommandArg>);
+    fn run(&self, context: Context, input: &Vec<CommandArg>) -> Vec<CommandAction>;
 }
 
 use std::collections::HashMap;
