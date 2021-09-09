@@ -1,5 +1,4 @@
-pub mod command_args;
-use command_args::{ArgValue, CommandAndArgs, CommandArg};
+use r_common::args::{ArgValue, CommandAndArgs, CommandArg};
 
 use regex::Regex;
 
@@ -16,7 +15,8 @@ pub fn parse_command(input: &mut String) -> CommandAndArgs {
 
     for arg in iter {
         if arg.starts_with("-") {
-            res.args.push(CommandArg::new_bool_value(&arg[1..].trim(), true));
+            res.args
+                .push(CommandArg::new_bool_value(&arg[1..].trim(), true));
         } else {
             res.args.push(CommandArg {
                 tag: None,

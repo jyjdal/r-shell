@@ -2,9 +2,9 @@ pub mod commands;
 
 use commands::all_commands;
 
-use r_parser::command_args::CommandArg;
+use r_common::action::CommandAction;
+use r_common::args::CommandArg;
 use r_context::context::Context;
-use r_context::action::CommandAction;
 
 pub trait BaseCommand {
     fn name(&self) -> &str;

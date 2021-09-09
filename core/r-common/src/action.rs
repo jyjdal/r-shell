@@ -4,5 +4,5 @@ pub enum CommandAction {
     // 清屏
     ClearHost,
     // 更换当前所在目录
-    ChangePath(String)
+    ChangePath(String),
 }

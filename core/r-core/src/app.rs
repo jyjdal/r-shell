@@ -8,7 +8,7 @@ use std::io::{stdin, stdout, Write};
 use std::path::PathBuf;
 
 use r_command::{init_commands, BaseCommand};
-use r_context::action::CommandAction;
+use r_common::action::CommandAction;
 use r_context::context::Context;
 use r_parser::parse_command;
 

@@ -10,3 +10,4 @@ walkdir = "2"
 
 r-parser = { path = "../r-parser" }
 r-context = { path = "../r-context" }
+r-common = { path = "../r-common" }

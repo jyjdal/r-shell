@@ -1,4 +1,3 @@
-// Parser 解析完命令之后返回一个数组
 #[derive(Clone)]
 pub struct CommandAndArgs<'a> {
     pub command: &'a str,
@@ -42,4 +41,8 @@ impl CommandArg<'_> {
 pub enum ArgValue {
     Bool(bool),
     String(String),
+}
+
+pub trait CommandArgs {
+    fn build(args: Vec<CommandArg>) -> Self;
 }
