@@ -1,7 +1,6 @@
 use crate::BaseCommand;
 
-use r_common::action::CommandAction;
-use r_common::args::CommandArg;
+use r_common::{ShellAction, ShellError, CommandArg};
 use r_context::context::Context;
 
 pub struct Clear {}
@@ -11,9 +10,9 @@ impl BaseCommand for Clear {
         "clear"
     }
 
-    fn run(&self, _: Context, _: &Vec<CommandArg>) -> Vec<CommandAction> {
+    fn run(&self, _: Context, _: &Vec<CommandArg>) -> Result<Vec<ShellAction>, ShellError> {
         let mut res = Vec::new();
-        res.push(CommandAction::ClearHost);
-        res
+        res.push(ShellAction::ClearHost);
+        Ok(res)
     }
 }

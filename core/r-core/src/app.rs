@@ -8,7 +8,7 @@ use std::io::{stdin, stdout, Write};
 use std::path::PathBuf;
 
 use r_command::{init_commands, BaseCommand};
-use r_common::action::CommandAction;
+use r_common::{ShellAction, ShellError};
 use r_context::context::Context;
 use r_parser::parse_command;
 
@@ -45,24 +45,14 @@ impl App {
             let res = parse_command(&mut buf);
 
             if let Some(t) = self.command_map.get(res.command) {
-                let actions = t.run(self.context.clone(), &res.args);
-                for action in actions {
-                    match action {
-                        CommandAction::ClearHost => {
-                            crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
-                                .execute_winapi()
-                                .unwrap();
+                match t.run(self.context.clone(), &res.args) {
+                    Ok(actions) => {
+                        for action in actions {
+                            self.process_action(action);
                         }
-                        CommandAction::Exit(code) => {
-                            std::process::exit(code);
-                        }
-                        CommandAction::ChangePath(new_path) => {
-                            // BUG 显示绝对路径时会有 \\?\ 字符串出现在开始
-                            // 但是好在bug不在我这里[doge]
-                            // https://github.com/rust-lang/rust/issues/42869
-                            self.context.current_dir =
-                                canonicalize(PathBuf::from(new_path)).unwrap();
-                        }
+                    }
+                    Err(err) => {
+                        self.process_error(err);
                     }
                 }
             } else {
@@ -70,6 +60,50 @@ impl App {
                 if let Err(_) = std::process::Command::new(res.command).args(args).status() {
                     println!("Unknown command!");
                 }
+            }
+        }
+    }
+
+    pub fn process_action(&mut self, action: ShellAction) {
+        match action {
+            ShellAction::ClearHost => {
+                crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
+                    .execute_winapi()
+                    .unwrap();
+            }
+            ShellAction::Exit(code) => {
+                std::process::exit(code);
+            }
+            ShellAction::ChangePath(new_path) => {
+                // BUG 显示绝对路径时会有 \\?\ 字符串出现在开始
+                // 但是好在bug不在我这里[doge]
+                // https://github.com/rust-lang/rust/issues/42869
+                self.context.current_dir = canonicalize(PathBuf::from(new_path)).unwrap();
+
+                // Temporarily fix the 'UNC path bug' on windows.
+                #[cfg(windows)]
+                {
+                    let dir = self.context.current_dir.to_str().unwrap_or(".");
+                    self.context.current_dir =
+                        PathBuf::from(dir.strip_prefix("\\\\?\\").unwrap_or("."));
+                }
+            }
+        }
+    }
+
+    fn process_error(&self, error: ShellError) {
+        match error {
+            ShellError::CannotOpenFile(filename) => {
+                println!("Unable to open file: {}!", filename);
+            }
+            ShellError::FileNotSpecified => {
+                println!("File not specified!");
+            }
+            ShellError::PathNotExist => {
+                println!("Path doesn't exist!");
+            }
+            ShellError::PathNotSpecified => {
+                println!("Path not specified!");
             }
         }
     }

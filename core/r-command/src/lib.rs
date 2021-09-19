@@ -2,14 +2,17 @@ pub mod commands;
 
 use commands::all_commands;
 
-use r_common::action::CommandAction;
-use r_common::args::CommandArg;
+use r_common::{CommandArg, ShellAction, ShellError};
 use r_context::context::Context;
 
 pub trait BaseCommand {
     fn name(&self) -> &str;
 
-    fn run(&self, context: Context, input: &Vec<CommandArg>) -> Vec<CommandAction>;
+    fn run(
+        &self,
+        context: Context,
+        input: &Vec<CommandArg>,
+    ) -> Result<Vec<ShellAction>, ShellError>;
 }
 
 use std::collections::HashMap;

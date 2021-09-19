@@ -1,4 +1,4 @@
-pub enum CommandAction {
+pub enum ShellAction {
     // 退出命令行
     Exit(i32),
     // 清屏

@@ -2,6 +2,7 @@ use r_common::args::{ArgValue, CommandAndArgs, CommandArg};
 
 use regex::Regex;
 
+// TODO 这里优化命令解析流程，可能需要编译原理的知识[doge]
 pub fn parse_command(input: &mut String) -> CommandAndArgs {
     let re = Regex::new(" ").unwrap();
     let command_group: Vec<&str> = re.split(input).collect();

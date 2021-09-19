@@ -3,8 +3,7 @@ use std::io::Read;
 use std::path::PathBuf;
 
 use crate::BaseCommand;
-use r_common::action::CommandAction;
-use r_common::args::{ArgValue, CommandArg};
+use r_common::{ArgValue, CommandArg, ShellAction, ShellError};
 use r_context::context::Context;
 
 pub struct Cat {}
@@ -14,10 +13,13 @@ impl BaseCommand for Cat {
         "cat"
     }
 
-    fn run(&self, context: Context, args: &Vec<CommandArg>) -> Vec<CommandAction> {
+    fn run(
+        &self,
+        context: Context,
+        args: &Vec<CommandArg>,
+    ) -> Result<Vec<ShellAction>, ShellError> {
         if args.len() == 0 {
-            println!("No file selected!");
-            return vec![];
+            return Err(ShellError::FileNotSpecified);
         }
 
         let arg = args[0].clone();
@@ -27,17 +29,16 @@ impl BaseCommand for Cat {
 
             match File::open(path.clone()) {
                 Err(_) => {
-                    println!("Unable to open file: {}", filename);
-                    return vec![];
+                    return Err(ShellError::CannotOpenFile(filename));
                 }
                 Ok(mut file) => {
                     let mut content = String::new();
                     file.read_to_string(&mut content).unwrap();
                     println!("{}", content);
-                    return vec![];
+                    return Ok(vec![]);
                 }
             }
         }
-        vec![]
+        Ok(vec![])
     }
 }

@@ -3,8 +3,8 @@ use walkdir::{DirEntry, WalkDir};
 
 use crate::BaseCommand;
 
-use r_common::action::CommandAction;
-use r_common::args::CommandArg;
+use r_common::{ShellAction, CommandArg, ShellError};
+// use r_common::args::CommandArg;
 use r_context::context::Context;
 
 pub struct Ls {}
@@ -14,7 +14,11 @@ impl BaseCommand for Ls {
         "ls"
     }
 
-    fn run(&self, context: Context, args: &Vec<CommandArg>) -> Vec<CommandAction> {
+    fn run(
+        &self,
+        context: Context,
+        args: &Vec<CommandArg>,
+    ) -> Result<Vec<ShellAction>, ShellError> {
         let path = Path::new(&context.current_dir);
         let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
 
@@ -39,7 +43,7 @@ impl BaseCommand for Ls {
         }
         println!("");
 
-        vec![]
+        Ok(vec![])
     }
 }
 
