@@ -3,6 +3,7 @@ mod cd;
 mod clear;
 mod exit;
 mod ls;
+mod args;
 
 pub use cat::Cat;
 pub use cd::Cd;

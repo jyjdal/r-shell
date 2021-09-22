@@ -5,4 +5,6 @@ pub enum ShellAction {
     ClearHost,
     // 更换当前所在目录
     ChangePath(String),
+    // 输出一些内容
+    OutputResult(String),
 }

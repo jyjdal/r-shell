@@ -1,6 +1,9 @@
+use crate::commands::args::CdArgs;
 use crate::BaseCommand;
 
-use r_common::{ArgValue, CommandArg, ShellAction, ShellError};
+use structopt::StructOpt;
+
+use r_common::{CommandArgs, ShellAction, ShellError};
 use r_context::context::Context;
 
 pub struct Cd {}
@@ -10,38 +13,16 @@ impl BaseCommand for Cd {
         "cd"
     }
 
-    fn run(
-        &self,
-        context: Context,
-        args: &Vec<CommandArg>,
-    ) -> Result<Vec<ShellAction>, ShellError> {
-        if args.len() == 0 {
-            return Err(ShellError::PathNotSpecified);
-        }
-        let arg = args[0].clone();
-        if let ArgValue::String(path) = arg.value {
-            if path == String::from(".") {
-                return Ok(vec![]);
-            } else if path == String::from("..") {
-                let mut new_path = context.current_dir;
-                new_path.pop();
-                return Ok(vec![ShellAction::ChangePath(format!(
-                    "{}",
-                    new_path.display()
-                ))]);
+    fn run(&self, context: Context, args: CommandArgs) -> Result<Vec<ShellAction>, ShellError> {
+        match CdArgs::from_iter_safe(args) {
+            Ok(args) => {
+                let mut dest = context.current_dir.clone();
+                dest.push(args.dest);
+                return Ok(vec![ShellAction::ChangePath(
+                    dest.as_path().display().to_string(),
+                )]);
             }
-
-            let mut new_path = context.current_dir;
-            new_path.push(path);
-            if new_path.exists() && new_path.is_dir() {
-                return Ok(vec![ShellAction::ChangePath(format!(
-                    "{}",
-                    new_path.display()
-                ))]);
-            } else {
-                return Err(ShellError::PathNotExist);
-            }
+            Err(e) => return Err(ShellError::ParseError(e.message)),
         }
-        Ok(vec![])
     }
 }

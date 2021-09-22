@@ -1,9 +1,11 @@
 use std::path::Path;
+use structopt::StructOpt;
 use walkdir::{DirEntry, WalkDir};
 
+use crate::commands::args::LsArgs;
 use crate::BaseCommand;
 
-use r_common::{ShellAction, CommandArg, ShellError};
+use r_common::{CommandArgs, ShellAction, ShellError};
 // use r_common::args::CommandArg;
 use r_context::context::Context;
 
@@ -14,36 +16,27 @@ impl BaseCommand for Ls {
         "ls"
     }
 
-    fn run(
-        &self,
-        context: Context,
-        args: &Vec<CommandArg>,
-    ) -> Result<Vec<ShellAction>, ShellError> {
+    fn run(&self, context: Context, args: CommandArgs) -> Result<Vec<ShellAction>, ShellError> {
         let path = Path::new(&context.current_dir);
         let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
 
-        let mut all: bool = false;
-        for arg in args {
-            if let Some(t) = arg.tag {
-                if t == "a" {
-                    all = true;
+        match LsArgs::from_iter_safe(args) {
+            Ok(args) => {
+                print!("  .\t..\t");
+                if args.all {
+                    for entry in walker {
+                        display_path(entry.unwrap());
+                    }
+                } else {
+                    for entry in walker.filter_entry(|e| !is_hidden(e)) {
+                        display_path(entry.unwrap());
+                    }
                 }
+                println!("");
+                Ok(vec![])
             }
+            Err(e) => Err(ShellError::ParseError(e.message)),
         }
-
-        print!("  .\t..\t");
-        if all {
-            for entry in walker {
-                display_path(entry.unwrap());
-            }
-        } else {
-            for entry in walker.filter_entry(|e| !is_hidden(e)) {
-                display_path(entry.unwrap());
-            }
-        }
-        println!("");
-
-        Ok(vec![])
     }
 }
 

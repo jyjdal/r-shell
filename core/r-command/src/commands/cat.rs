@@ -1,9 +1,11 @@
 use std::fs::File;
 use std::io::Read;
-use std::path::PathBuf;
 
+use crate::commands::args::CatArgs;
 use crate::BaseCommand;
-use r_common::{ArgValue, CommandArg, ShellAction, ShellError};
+use structopt::StructOpt;
+
+use r_common::{CommandArgs, ShellAction, ShellError};
 use r_context::context::Context;
 
 pub struct Cat {}
@@ -13,32 +15,24 @@ impl BaseCommand for Cat {
         "cat"
     }
 
-    fn run(
-        &self,
-        context: Context,
-        args: &Vec<CommandArg>,
-    ) -> Result<Vec<ShellAction>, ShellError> {
-        if args.len() == 0 {
-            return Err(ShellError::FileNotSpecified);
-        }
-
-        let arg = args[0].clone();
-        if let ArgValue::String(filename) = arg.value {
-            let mut path: PathBuf = context.current_dir;
-            path.push(filename.clone());
-
-            match File::open(path.clone()) {
-                Err(_) => {
-                    return Err(ShellError::CannotOpenFile(filename));
-                }
-                Ok(mut file) => {
-                    let mut content = String::new();
-                    file.read_to_string(&mut content).unwrap();
-                    println!("{}", content);
-                    return Ok(vec![]);
+    fn run(&self, context: Context, args: CommandArgs) -> Result<Vec<ShellAction>, ShellError> {
+        match CatArgs::from_iter_safe(args) {
+            Ok(args) => {
+                let mut file_path = context.current_dir.clone();
+                file_path.push(args.file_name.clone());
+                let mut file = match File::open(file_path) {
+                    Err(_) => {
+                        return Err(ShellError::CannotOpenFile(args.file_name));
+                    }
+                    Ok(file) => file,
+                };
+                let mut res = String::new();
+                match file.read_to_string(&mut res) {
+                    Ok(_) => return Ok(vec![ShellAction::OutputResult(res)]),
+                    Err(_) => return Err(ShellError::CannotReadFile(args.file_name)),
                 }
             }
+            Err(e) => Err(ShellError::ParseError(e.message)),
         }
-        Ok(vec![])
     }
 }
