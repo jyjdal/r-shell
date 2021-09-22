@@ -44,8 +44,8 @@ impl App {
             // 匹配命令，执行命令
             let res = parse_command(&mut buf);
 
-            if let Some(t) = self.command_map.get(res.command) {
-                match t.run(self.context.clone(), &res.args) {
+            if let Some(t) = self.command_map.get(&res.command) {
+                match t.run(self.context.clone(), res.args) {
                     Ok(actions) => {
                         for action in actions {
                             self.process_action(action);
@@ -56,7 +56,7 @@ impl App {
                     }
                 }
             } else {
-                let args = res.clone().to_vec();
+                let args = res.args.iter();
                 if let Err(_) = std::process::Command::new(res.command).args(args).status() {
                     println!("Unknown command!");
                 }
@@ -88,23 +88,18 @@ impl App {
                         PathBuf::from(dir.strip_prefix("\\\\?\\").unwrap_or("."));
                 }
             }
+            ShellAction::OutputResult(result) => println!("{}", result),
         }
     }
 
     fn process_error(&self, error: ShellError) {
         match error {
-            ShellError::CannotOpenFile(filename) => {
-                println!("Unable to open file: {}!", filename);
-            }
-            ShellError::FileNotSpecified => {
-                println!("File not specified!");
-            }
-            ShellError::PathNotExist => {
-                println!("Path doesn't exist!");
-            }
-            ShellError::PathNotSpecified => {
-                println!("Path not specified!");
-            }
+            ShellError::CannotOpenFile(filename) => println!("Unable to open file: {}!", filename),
+            ShellError::CannotReadFile(filename) => println!("Unable to open file: {}!", filename),
+            ShellError::FileNotSpecified => println!("File not specified!"),
+            ShellError::PathNotExist => println!("Path doesn't exist!"),
+            ShellError::PathNotSpecified => println!("Path not specified!"),
+            ShellError::ParseError(message) => println!("Parse error:\n{}", message),
         }
     }
 }
