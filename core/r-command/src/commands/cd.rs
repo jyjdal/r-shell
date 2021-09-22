@@ -18,9 +18,16 @@ impl BaseCommand for Cd {
             Ok(args) => {
                 let mut dest = context.current_dir.clone();
                 dest.push(args.dest);
-                return Ok(vec![ShellAction::ChangePath(
-                    dest.as_path().display().to_string(),
-                )]);
+                match dest.exists() {
+                    true => {
+                        return Ok(vec![ShellAction::ChangePath(
+                            dest.as_path().display().to_string(),
+                        )]);
+                    }
+                    false => {
+                        return Err(ShellError::PathNotExist);
+                    }
+                }
             }
             Err(e) => return Err(ShellError::ParseError(e.message)),
         }
