@@ -5,4 +5,8 @@ use structopt::StructOpt;
 pub struct LsArgs {
     #[structopt(short, long)]
     pub all: bool,
+
+    // Display files in reverse order.
+    #[structopt(short, long)]
+    pub reverse: bool,
 }

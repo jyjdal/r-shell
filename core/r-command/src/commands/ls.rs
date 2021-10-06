@@ -6,7 +6,6 @@ use crate::commands::args::LsArgs;
 use crate::BaseCommand;
 
 use r_common::{CommandArgs, ShellAction, ShellError};
-// use r_common::args::CommandArg;
 use r_context::context::Context;
 
 pub struct Ls {}
@@ -20,22 +19,32 @@ impl BaseCommand for Ls {
         let path = Path::new(&context.current_dir);
         let walker = WalkDir::new(path).max_depth(1).min_depth(1).into_iter();
 
+        let mut entries: Vec<DirEntry> = vec![];
+
         match LsArgs::from_iter_safe(args) {
+            Err(e) => Err(ShellError::ParseError(e.message)),
             Ok(args) => {
-                print!("  .\t..\t");
-                if args.all {
-                    for entry in walker {
-                        display_path(entry.unwrap());
+                if !args.all {
+                    for entry in walker.filter_entry(|e| !is_hidden(e)) {
+                        entries.push(entry.unwrap());
                     }
                 } else {
-                    for entry in walker.filter_entry(|e| !is_hidden(e)) {
-                        display_path(entry.unwrap());
+                    for entry in walker {
+                        entries.push(entry.unwrap());
                     }
+                }
+                if args.reverse {
+                    entries.reverse();
+                }
+
+                // The actual output period.
+                print!("  .\t..\t");
+                for entry in entries {
+                    display_path(entry);
                 }
                 println!("");
                 Ok(vec![])
             }
-            Err(e) => Err(ShellError::ParseError(e.message)),
         }
     }
 }
